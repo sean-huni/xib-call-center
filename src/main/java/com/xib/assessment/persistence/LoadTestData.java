@@ -1,6 +1,11 @@
-package com.xib.assessment;
+package com.xib.assessment.persistence;
 
+import com.xib.assessment.persistence.model.Agent;
+import com.xib.assessment.persistence.model.Team;
+import com.xib.assessment.persistence.repo.AgentRepository;
+import com.xib.assessment.persistence.repo.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -8,11 +13,14 @@ import javax.transaction.Transactional;
 
 @Component
 public class LoadTestData {
-    @Autowired
-    AgentRepository agentRepository;
+    private final AgentRepository agentRepository;
 
-    @Autowired
-    TeamRepository teamRepository;
+    private final TeamRepository teamRepository;
+
+    public LoadTestData(AgentRepository agentRepository, TeamRepository teamRepository) {
+        this.agentRepository = agentRepository;
+        this.teamRepository = teamRepository;
+    }
 
     @PostConstruct
     @Transactional
@@ -33,7 +41,7 @@ public class LoadTestData {
         return teamRepository.save(t);
     }
 
-    private Agent createAgent(String firstName, String lastName, String idNumber,  Team team) {
+    private Agent createAgent(String firstName, String lastName, String idNumber, Team team) {
         Agent a = new Agent();
         a.setFirstName(firstName);
         a.setLastName(lastName);

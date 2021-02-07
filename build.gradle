@@ -1,27 +1,53 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.1.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.2.1.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
 }
 
 group = 'com.xib'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
+def springBootAdminVersion = '2.2.1'
+def springFoxVer = '3.0.0'
+def restAssured = '4.2.1'
+def jaxb = '3.0.0'
+
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.h2database:h2'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.h2database:h2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation "de.codecentric:spring-boot-admin-starter-client:${springBootAdminVersion}"
+    implementation "de.codecentric:spring-boot-admin-starter-server:${springBootAdminVersion}"
+    implementation 'org.springframework.boot:spring-boot-devtools'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+
+//	Spring Fox Swagger
+
+    implementation "io.springfox:springfox-swagger2:$springFoxVer"
+    implementation "io.springfox:springfox-boot-starter:$springFoxVer"
+    implementation "io.springfox:springfox-swagger-ui:$springFoxVer"
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testCompile "io.rest-assured:rest-assured:$restAssured"
+    testCompile "io.rest-assured:json-path:$restAssured"
+    testCompile "io.rest-assured:xml-path:$restAssured"
+    testCompile "io.rest-assured:rest-assured-common:$restAssured"
+    testCompile "com.sun.xml.bind:jaxb-osgi:$jaxb"
 }
 
+
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
