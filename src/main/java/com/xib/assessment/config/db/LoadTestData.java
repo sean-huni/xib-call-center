@@ -1,25 +1,23 @@
-package com.xib.assessment.config;
+package com.xib.assessment.config.db;
 
 import com.xib.assessment.persistence.model.Agent;
 import com.xib.assessment.persistence.model.Team;
-import com.xib.assessment.persistence.repo.AgentRepository;
-import com.xib.assessment.persistence.repo.TeamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.xib.assessment.persistence.repo.AgentRepo;
+import com.xib.assessment.persistence.repo.TeamRepo;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 @Configuration
 public class LoadTestData {
-    private final AgentRepository agentRepository;
+    private final AgentRepo agentRepo;
 
-    private final TeamRepository teamRepository;
+    private final TeamRepo teamRepo;
 
-    public LoadTestData(AgentRepository agentRepository, TeamRepository teamRepository) {
-        this.agentRepository = agentRepository;
-        this.teamRepository = teamRepository;
+    public LoadTestData(AgentRepo agentRepo, TeamRepo teamRepo) {
+        this.agentRepo = agentRepo;
+        this.teamRepo = teamRepo;
     }
 
     @PostConstruct
@@ -38,7 +36,7 @@ public class LoadTestData {
     private Team createTeam(String name) {
         Team t = new Team();
         t.setName(name);
-        return teamRepository.save(t);
+        return teamRepo.save(t);
     }
 
     private Agent createAgent(String firstName, String lastName, String idNumber, Team team) {
@@ -47,6 +45,6 @@ public class LoadTestData {
         a.setLastName(lastName);
         a.setIdNumber(idNumber);
         a.setTeam(team);
-        return agentRepository.save(a);
+        return agentRepo.save(a);
     }
 }

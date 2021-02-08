@@ -26,7 +26,7 @@ public class ErrorAdviceCtrl extends MessageSourceCtrlAdvice{
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     ResponseEntity<ErrorDto> handleConstraintException(MethodArgumentNotValidException ex) {
-        log.error(ex.getMessage(), ex);
+        log.warn(ex.getMessage(), ex);
         String errorResp = extractMessageSource("error.validation.id");
         log.info("Message Source: {}", errorResp);
         return getErrorResponseEntity(errorResp, ex);

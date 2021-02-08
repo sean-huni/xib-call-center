@@ -4,7 +4,7 @@ import com.xib.assessment.converter.todto.ToAgentDto;
 import com.xib.assessment.converter.tomodel.ToAgent;
 import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.persistence.model.Agent;
-import com.xib.assessment.persistence.repo.AgentRepository;
+import com.xib.assessment.persistence.repo.AgentRepo;
 import com.xib.assessment.service.AgentService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
 @Service
 public class AgentServiceImpl implements AgentService {
     private final ToAgentDto toAgentDtoConverter;
-    private final AgentRepository agentRepo;
+    private final AgentRepo agentRepo;
     private ToAgent toAgentConverter;
 
 
-    public AgentServiceImpl(ToAgentDto toAgentDtoConverter, AgentRepository agentRepo) {
+    public AgentServiceImpl(ToAgentDto toAgentDtoConverter, AgentRepo agentRepo) {
         this.toAgentDtoConverter = toAgentDtoConverter;
         this.agentRepo = agentRepo;
     }
@@ -82,7 +82,7 @@ public class AgentServiceImpl implements AgentService {
         try {
             f = Agent.class.getDeclaredField(fieldSort);
         } catch (NoSuchFieldException e) {
-            log.error("field not found.", e);
+            log.warn("field not found", e);
             f = Arrays.stream(Agent.class.getDeclaredFields()).findFirst().get();
             log.info("Fallback Sort-by: " + f.getName());
         }
