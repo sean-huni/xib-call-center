@@ -22,7 +22,6 @@ class AssessmentApplicationTests {
 
 	@Test
 	@DisplayName("Load Spring Context Successfully")
-	@DirtiesContext
 	void contextLoads() {
 		assertNotNull(context);
 	}

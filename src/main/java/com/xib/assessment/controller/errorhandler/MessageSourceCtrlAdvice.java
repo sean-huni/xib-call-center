@@ -1,6 +1,5 @@
 package com.xib.assessment.controller.errorhandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import java.util.Locale;

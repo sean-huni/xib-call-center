@@ -1,7 +1,5 @@
 package com.xib.assessment.exception;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
 public class ValidationFailedException extends Exception {
     /**
      * Constructs a new exception with the specified detail message.  The

@@ -19,8 +19,8 @@ public interface AgentService {
     /**
      * Find all existing agents with {@link Pageable} & {@link Sort.Direction}
      *
-     * @param size or number of elements per page.
-     * @param page number of the results. Starts from page zero.
+     * @param size      or number of elements per page.
+     * @param page      number of the results. Starts from page zero.
      * @param direction {@link org.springframework.data.domain.Sort.Direction}
      * @param fieldSort name of the field to sort.
      * @return {@link  Collection <AgentDto>}
@@ -30,6 +30,7 @@ public interface AgentService {
 
     /**
      * Find all existing agents.
+     *
      * @return {@link  Collection <AgentDto>}
      */
     Collection<AgentDto> findAllAgents();
@@ -41,6 +42,4 @@ public interface AgentService {
      * @return saved {@link AgentDto}.
      */
     AgentDto saveAgent(AgentDto agent);
-
-
 }

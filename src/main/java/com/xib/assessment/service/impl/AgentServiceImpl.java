@@ -8,6 +8,7 @@ import com.xib.assessment.persistence.repo.AgentRepo;
 import com.xib.assessment.service.AgentService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,9 +23,9 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 public class AgentServiceImpl implements AgentService {
-    private final ToAgentDto toAgentDtoConverter;
+    private final Converter<Agent, AgentDto> toAgentDtoConverter;
     private final AgentRepo agentRepo;
-    private ToAgent toAgentConverter;
+    private Converter<AgentDto, Agent> toAgentConverter;
 
 
     public AgentServiceImpl(ToAgentDto toAgentDtoConverter, AgentRepo agentRepo) {
@@ -49,6 +50,7 @@ public class AgentServiceImpl implements AgentService {
 
     /**
      * Find all existing agents.
+     *
      * @return {@link  Collection <AgentDto>}
      */
     @Override
@@ -60,8 +62,8 @@ public class AgentServiceImpl implements AgentService {
     /**
      * Find all existing agents with {@link Pageable} & {@link Sort.Direction}
      *
-     * @param size or number of elements per page.
-     * @param page number of the results. Starts from page zero.
+     * @param size      or number of elements per page.
+     * @param page      number of the results. Starts from page zero.
      * @param direction {@link org.springframework.data.domain.Sort.Direction}
      * @param fieldSort name of the field to sort.
      * @return {@link  Collection <AgentDto>}

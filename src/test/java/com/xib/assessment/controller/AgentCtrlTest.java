@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.xib.assessment.util.TestCases.getAgents;
@@ -135,7 +134,7 @@ class AgentCtrlTest {
                 .then()
                 .body("field", Matchers.equalTo("idNumber")) //field=idNumber, rejectedValue=150, message=idNumber must have 13 characters in your request-payload
                 .body("rejectedValue", Matchers.is("150"))
-                .body("message", Matchers.equalTo("idNumber must have 13 characters in your request-payload"))
+                .body("message", Matchers.equalTo("Agent-idNumber must not be null"))
                 .assertThat()
                 .statusCode(HttpStatus.FORBIDDEN.value());
     }

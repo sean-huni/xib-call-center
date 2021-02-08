@@ -30,7 +30,7 @@ public class LoadTestData {
         createAgent("Tony", "Stark", "6912115191083", team1);
         createAgent("Peter", "Parker", "7801115190084", team1);
         createAgent("Bruce", "Wayne", "6511185190085", team2);
-        createAgent("Clark", "Kent", "5905115190086",team2);
+        createAgent("Clark", "Kent", "5905115190086", team2);
     }
 
     private Team createTeam(String name) {

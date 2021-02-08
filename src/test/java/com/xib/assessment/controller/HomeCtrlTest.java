@@ -21,7 +21,6 @@ class HomeCtrlTest {
     private int port;
 
     @BeforeEach
-    @DirtiesContext
     void setup() {
         RestAssured.port = port;
     }
@@ -34,7 +33,7 @@ class HomeCtrlTest {
                 .when()
                 .get("/")
                 .then()
-                .body(containsString("Swagger"))
+                .body(containsString("Swagger UI"))
                 .assertThat()
                 .statusCode(200);
     }

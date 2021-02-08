@@ -12,8 +12,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-public class ToTeam implements Converter<TeamDto, Team>  {
-    private Converter<AgentDto, Agent> agentConverter;
+public class ToTeam implements Converter<TeamDto, Team> {
+    private final Converter<AgentDto, Agent> agentConverter;
 
     public ToTeam(Converter<AgentDto, Agent> agentConverter) {
         this.agentConverter = agentConverter;
@@ -31,7 +31,7 @@ public class ToTeam implements Converter<TeamDto, Team>  {
         return Objects.nonNull(source) ? new Team(source.getId(), source.getName(), toAgentCollection(source.getAgentDtoCollection())) : null;
     }
 
-    private Collection<Agent> toAgentCollection(Collection<AgentDto> agentDtoCollection){
+    private Collection<Agent> toAgentCollection(Collection<AgentDto> agentDtoCollection) {
         return Objects.nonNull(agentDtoCollection) ? agentDtoCollection.stream().map(agentConverter::convert).collect(Collectors.toList()) : null;
     }
 }

@@ -19,7 +19,6 @@ public class ToTeamModelTest {
     private Converter<TeamDto, Team> toTeamDto;
 
     @BeforeEach
-    @DirtiesContext
     void setup() {}
 
     @Test
