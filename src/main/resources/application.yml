@@ -5,6 +5,12 @@ springfox:
         path: /api-docs
 
 spring:
+  messages:
+    always-use-message-format: true
+    basename: i18n.messages
+    cache-duration: 5000s
+    encoding: UTF-8
+    fallback-to-system-locale: true
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver

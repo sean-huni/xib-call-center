@@ -1,5 +1,7 @@
 package com.xib.assessment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.service.AgentService;
@@ -12,19 +14,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.xib.assessment.util.TestCases.getAgents;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @AutoConfigureMockMvc
@@ -36,11 +35,11 @@ class AgentCtrlTest {
     @LocalServerPort
     private int port;
 
+
     @BeforeEach
     void setup() {
         RestAssured.port = port;
     }
-
 
     @Test
     @DisplayName("Find Agent by Id - HTTP.GET")
@@ -95,17 +94,49 @@ class AgentCtrlTest {
                 .statusCode(200);
     }
 
+    @Test
+    @DisplayName("Create new Agent - HTTP.POST")
+    void givenAgent_whenCreatingNewAgent_thenReturnNewAgent() throws JsonProcessingException {
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
+        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
 
-    private static Collection<AgentDto> getAgents(){
-        Collection<AgentDto> agents = new ArrayList<>();
+        when(agentService.saveAgent(agent)).thenReturn(agentResp);
 
-        agents.add(new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null)));
-        agents.add(new AgentDto(2L, "Bruce", "Banner", "1011125190081", new TeamDto(1L, "DC", null)));
-        agents.add(new AgentDto(3L, "Tony", "Stark", "6912115191083", new TeamDto(1L, "DC", null)));
-        agents.add(new AgentDto(4L, "Peter", "Parker", "7801115190084", new TeamDto(1L, "DC", null)));
-        agents.add(new AgentDto(5L, "Bruce", "Wayne", "6511185190085", new TeamDto(2L, "Marvel", null)));
-        agents.add(new AgentDto(6L, "Clark", "Kent", "5905115190086",new TeamDto(2L, "Marvel", null)));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(agent);
 
-        return agents;
+        given()
+                .body(json)
+                .contentType("application/json;charset=UTF-8")
+                .when()
+                .post("agent")
+                .then()
+                .body("id", Matchers.equalTo(1))
+                .assertThat()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("Create new Agent Negative Test - HTTP.POST")
+    void givenAgent_whenCreatingNewAgentNegative_thenReturnNewAgent() throws JsonProcessingException {
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "150", new TeamDto(1L, "DC", null));
+        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
+
+        when(agentService.saveAgent(agent)).thenReturn(agentResp);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(agent);
+
+        given()
+                .body(json)
+                .contentType("application/json;charset=UTF-8")
+                .when()
+                .post("agent")
+                .then()
+                .body("field", Matchers.equalTo("idNumber")) //field=idNumber, rejectedValue=150, message=idNumber must have 13 characters in your request-payload
+                .body("rejectedValue", Matchers.is("150"))
+                .body("message", Matchers.equalTo("idNumber must have 13 characters in your request-payload"))
+                .assertThat()
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 }

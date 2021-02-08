@@ -1,4 +1,4 @@
-package com.xib.assessment.persistence;
+package com.xib.assessment.config;
 
 import com.xib.assessment.persistence.model.Agent;
 import com.xib.assessment.persistence.model.Team;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
-@Component
+@Configuration
 public class LoadTestData {
     private final AgentRepository agentRepository;
 

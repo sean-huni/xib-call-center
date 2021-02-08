@@ -34,6 +34,6 @@ public class ToTeamDto implements Converter<Team, TeamDto> {
     }
 
     private Collection<AgentDto> toAgentDtoCollection(Collection<Agent> agents) {
-        return agents.stream().map(a -> toAgentDtoConverter.convert(a)).collect(Collectors.toList());
+        return Objects.nonNull(agents) ? agents.stream().map(a -> toAgentDtoConverter.convert(a)).collect(Collectors.toList()) : null;
     }
 }

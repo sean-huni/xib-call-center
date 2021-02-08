@@ -97,8 +97,6 @@ public class AgentServiceImpl implements AgentService {
      */
     @Override
     public AgentDto saveAgent(AgentDto agent) {
-        //Todo: Check for nulls
-
         Agent agentSaved = agentRepo.save(toAgentConverter.convert(agent));
 
         return toAgentDtoConverter.convert(agentSaved);

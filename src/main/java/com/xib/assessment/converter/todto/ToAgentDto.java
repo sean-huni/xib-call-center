@@ -23,7 +23,11 @@ public class ToAgentDto implements Converter<Agent, AgentDto> {
     public AgentDto convert(Agent source) {
         if (Objects.nonNull(source)) {
             Team oldTeam = source.getTeam();
-            return new AgentDto(source.getId(), source.getFirstName(), source.getLastName(), source.getIdNumber(), new TeamDto(oldTeam.getId(), oldTeam.getName(), null));
+            AgentDto agent = new AgentDto(source.getId(), source.getFirstName(), source.getLastName(), source.getIdNumber());
+            if (Objects.nonNull(oldTeam)) {
+                agent.setTeamDto(new TeamDto(oldTeam.getId(), oldTeam.getName()));
+            }
+            return agent;
         }
         return null;
     }
