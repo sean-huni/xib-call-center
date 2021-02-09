@@ -30,7 +30,7 @@ public class ToTeamDto implements Converter<Team, TeamDto> {
      */
     @Override
     public TeamDto convert(Team source) {
-        return Objects.nonNull(source) ? new TeamDto(source.getId(), source.getName(), toAgentDtoCollection(source.getAgents())) : null;
+        return Objects.nonNull(source) ? new TeamDto(source.getId(), source.getName(), toAgentDtoCollection(source.getAgents()), source.getManagedTeams()) : null;
     }
 
     private Collection<AgentDto> toAgentDtoCollection(Collection<Agent> agents) {
