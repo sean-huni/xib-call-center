@@ -15,10 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Collection;
 
-import static com.xib.assessment.util.TestCases.getAgents;
+import static com.xib.assessment.util.TestAgentStub.getAgents;
 import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -36,6 +37,7 @@ class AgentCtrlTest {
 
 
     @BeforeEach
+    @DirtiesContext
     void setup() {
         RestAssured.port = port;
     }
@@ -94,6 +96,24 @@ class AgentCtrlTest {
     }
 
     @Test
+    @DisplayName("Find All Agents with pagination - HTTP.GET")
+    void givenAgentCtrl_whenGetAllAgents_withPagination_andWrongFieldName_thenReturnAllMockedAgents() {
+        Collection<AgentDto> agents = getAgents();
+        agents.removeIf(a -> a.getLastName().contains("ne"));
+
+        when(agentService.findAllAgents(anyInt(), anyInt(), any(), anyString())).thenReturn(agents);
+
+        given()
+                .contentType("application/json;charset=UTF-8")
+                .when()
+                .get("agent?size=3&page=0&field=wrongFieldName&sort=DESC")
+                .then()
+                .body("", Matchers.hasSize(4))
+                .assertThat()
+                .statusCode(200);
+    }
+
+    @Test
     @DisplayName("Create new Agent - HTTP.POST")
     void givenAgent_whenCreatingNewAgent_thenReturnNewAgent() throws JsonProcessingException {
         AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
@@ -134,7 +154,7 @@ class AgentCtrlTest {
                 .then()
                 .body("field", Matchers.equalTo("idNumber")) //field=idNumber, rejectedValue=150, message=idNumber must have 13 characters in your request-payload
                 .body("rejectedValue", Matchers.is("150"))
-                .body("message", Matchers.equalTo("Agent-idNumber must not be null"))
+                .body("message", Matchers.equalTo("Agent-idNumber must have 13 characters"))
                 .assertThat()
                 .statusCode(HttpStatus.FORBIDDEN.value());
     }

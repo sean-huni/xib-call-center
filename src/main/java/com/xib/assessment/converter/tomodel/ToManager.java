@@ -1,17 +1,14 @@
 package com.xib.assessment.converter.tomodel;
 
-import com.xib.assessment.dto.AgentDto;
-import com.xib.assessment.dto.TeamDto;
-import com.xib.assessment.persistence.model.Agent;
-import com.xib.assessment.persistence.model.Team;
+import com.xib.assessment.dto.ManagerDto;
+import com.xib.assessment.persistence.model.Manager;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 @Component
-public class ToAgent implements Converter<AgentDto, Agent> {
-
+public class ToManager implements Converter<ManagerDto, Manager> {
     /**
      * Convert the source object of type {@code S} to target type {@code T}.
      *
@@ -20,11 +17,9 @@ public class ToAgent implements Converter<AgentDto, Agent> {
      * @throws IllegalArgumentException if the source cannot be converted to the desired target type
      */
     @Override
-    public Agent convert(AgentDto source) {
+    public Manager convert(ManagerDto source) {
         if (Objects.nonNull(source)) {
-            TeamDto teamDto = source.getTeamDto();
-            Team tModel = Objects.nonNull(teamDto) ? new Team(teamDto.getId(), teamDto.getName()) : null;
-            return new Agent(source.getId(), source.getFirstName(), source.getLastName(), source.getIdNumber(), tModel);
+            return new Manager(source.getId(), source.getFirstName(), source.getLastName(), source.getEmail());
         }
         return null;
     }

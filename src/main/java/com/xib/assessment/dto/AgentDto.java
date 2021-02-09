@@ -22,9 +22,9 @@ public class AgentDto {
     @NotEmpty(message = "validation.constraint.empty.agent.lastName")
     @Size(max = 255, min = 3, message = "validation.constraint.size.agent.lastName")
     private String lastName;
-    @NotNull(message = "validation.constraint.size.agent.idNumber")
+    @NotNull(message = "validation.constraint.notNull.agent.idNumber")
     @NotEmpty(message = "validation.constraint.empty.agent.idNumber")
-    @Size(max = 13, min = 13, message = "validation.constraint.notNull.agent.idNumber")
+    @Size(max = 13, min = 13, message = "validation.constraint.size.agent.idNumber")
     private String idNumber;
 
     @JsonProperty("team")

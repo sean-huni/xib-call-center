@@ -5,10 +5,8 @@ import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.persistence.model.Agent;
 import com.xib.assessment.persistence.model.Team;
 import com.xib.assessment.persistence.repo.AgentRepo;
-import com.xib.assessment.service.AgentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,9 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.xib.assessment.util.TestCases.getAgentsModel;
+import static com.xib.assessment.util.TestAgentStub.getAgentsModel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,6 +52,21 @@ class AgentServiceTest {
     }
 
     @Test
+    @DisplayName("Given AgentService, when mocking AgentRepo with wrong Field Name, find with pagination")
+    void givenAgentService_whenMockingAgentRepo_andFindWithPagination_andWrongFieldName_thenAgentDtoSuccess() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "firstName");
+        Pageable pageable = PageRequest.of(0, 3, sort);
+
+        Page<Agent> page = new PageImpl<>(new ArrayList<>(getAgentsModel()));
+
+        when(agentRepo.findAll(pageable)).thenReturn(page);
+        Collection<AgentDto> agents = agentService.findAllAgents(3, 0, Sort.Direction.DESC, "wrongFieldName");
+
+        assertNotNull(agents);
+        verify(agentRepo, times(1)).findAll(pageable);
+    }
+
+    @Test
     @DisplayName("Given AgentService, when mocking AgentRepo, find All Agents")
     void givenAgentService_whenMockingAgentRepo_thenReturnAgentDtoCollection() {
         when(agentRepo.findAll()).thenReturn((List<Agent>) getAgentsModel());
@@ -65,7 +79,7 @@ class AgentServiceTest {
     @Test
     @DisplayName("Given AgentService, when mocking AgentRepo, find Agent By Id")
     void givenAgentService_whenMockingAgentRepo_andFindAgentById_thenReturnAgentDto() {
-        when(agentRepo.findById(3L)).thenReturn(getAgentsModel().stream().filter(a-> a.getId() == 3).findFirst());
+        when(agentRepo.findById(3L)).thenReturn(getAgentsModel().stream().filter(a -> a.getId() == 3).findFirst());
         AgentDto agent = agentService.findAgentById(3L);
 
         assertNotNull(agent);
@@ -77,14 +91,13 @@ class AgentServiceTest {
     @DisplayName("Given AgentService, when mocking AgentRepo, Save New Agent")
     void givenAgentService_whenMockingAgentRepo_andSaveNewAgent_thenReturnAgentDto() {
         AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(2L, "DC", null));
-        Agent agentNoId = new Agent(null, "Sean", "Huni", "1501246344184", new Team(2L, "DC", null));
         Agent agentResp = new Agent(9L, "Sean", "Huni", "1501246344184", new Team(2L, "DC", null));
 
-        when(agentRepo.save(agentNoId)).thenReturn(agentResp);
-        AgentDto agentResp2 = agentService.saveAgent(agent);
+        when(agentRepo.save(any(Agent.class))).thenReturn(agentResp);
+        AgentDto agentRespTest = agentService.saveAgent(agent);
 
-        assertNotNull(agentResp2);
-        assertEquals(9L, agentResp2.getId());
-        verify(agentRepo, times(1)).save(agentNoId);
+        assertNotNull(agentRespTest);
+        assertEquals(9L, agentRespTest.getId());
+        verify(agentRepo, times(1)).save(any(Agent.class));
     }
 }

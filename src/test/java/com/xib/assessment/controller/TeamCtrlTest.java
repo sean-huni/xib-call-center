@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import static com.xib.assessment.util.TestCases.getAgents;
+import static com.xib.assessment.util.TestAgentStub.getAgents;
 import static io.restassured.RestAssured.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,6 +57,8 @@ class TeamCtrlTest {
                 .body("[1].id", Matchers.is(1))
                 .assertThat()
                 .statusCode(200);
+
+        verify(teamService, times(1)).findAllTeams();
     }
 
     @Test
@@ -75,6 +77,8 @@ class TeamCtrlTest {
                 .body("id", Matchers.is(1))
                 .assertThat()
                 .statusCode(200);
+
+        verify(teamService, times(1)).findTeamById(1L);
     }
 
     @Test

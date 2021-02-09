@@ -27,10 +27,6 @@ public class TeamDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Collection<AgentDto> agentDtoCollection;
 
-    public TeamDto(@NotNull(message = "validation.constraint.notNull.team.name") @NotEmpty(message = "validation.constraint.empty.team.name") @Size(max = 255, min = 2, message = "validation.constraint.size.team.name") String name) {
-        this.name = name;
-    }
-
     public TeamDto(Long id, String name) {
         this.id = id;
         this.name = name;
