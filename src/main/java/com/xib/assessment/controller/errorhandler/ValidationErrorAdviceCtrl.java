@@ -16,8 +16,8 @@ import java.util.Objects;
 
 @Log4j2
 @RestControllerAdvice
-public class ErrorAdviceCtrl extends MessageSourceCtrlAdvice {
-    protected ErrorAdviceCtrl(MessageSource messageSource) {
+public class ValidationErrorAdviceCtrl extends MessageSourceCtrlAdvice {
+    protected ValidationErrorAdviceCtrl(MessageSource messageSource) {
         super(messageSource);
     }
 

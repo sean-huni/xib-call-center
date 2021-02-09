@@ -1,9 +1,15 @@
 package com.xib.assessment.service;
 
 import com.xib.assessment.dto.TeamDto;
+import com.xib.assessment.exception.AgentAlreadyAssignedException;
+import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.TeamNotFoundException;
+import com.xib.assessment.persistence.model.Agent;
 import com.xib.assessment.persistence.model.Team;
+import com.xib.assessment.persistence.repo.AgentRepo;
 import com.xib.assessment.persistence.repo.TeamRepo;
 import com.xib.assessment.util.TeamStub;
+import com.xib.assessment.util.TestAgentStub;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +18,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +32,9 @@ import static org.mockito.Mockito.when;
 class TeamServiceTest {
     @MockBean
     private TeamRepo teamRepo;
+
+    @MockBean
+    private AgentRepo agentRepo;
 
     @Autowired
     private TeamService teamService;
@@ -69,4 +81,61 @@ class TeamServiceTest {
         assertEquals("Mongo", teamDto.getName());
         verify(teamRepo, times(1)).save(team);
     }
+
+    @Test
+    @DisplayName("Assign existing agent to the team - Throw AgentAlreadyAssignedException")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenThrowAgentAlreadyAssignedException() {
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findAny();
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        expectedResp.get().getAgents().add(agent.get());
+
+        when(agentRepo.findById(1L)).thenReturn(agent);
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+        AgentAlreadyAssignedException exception = assertThrows(AgentAlreadyAssignedException.class, () -> teamService.assignAgent(1L, 1L));
+        assertEquals("validation.error.assigned.team", exception.getMessage());
+        assertEquals(1, exception.getAgentId());
+        assertEquals(1, exception.getTeamId());
+        verify(teamRepo, times(0)).save(any(Team.class));
+    }
+
+    @Test
+    @DisplayName("Assign existing agent to the team - Throw TeamNotFoundException")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenThrowTeamNotFoundException() {
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findAny();
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        expectedResp.get().getAgents().add(agent.get());
+
+        when(agentRepo.findById(12L)).thenReturn(agent);
+        when(teamRepo.findById(10L)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+        TeamNotFoundException exception = assertThrows(TeamNotFoundException.class, () -> teamService.assignAgent(12L, 10L));
+        assertEquals("validation.error.notFound.team", exception.getMessage());
+        assertEquals(12, exception.getId());
+        verify(teamRepo, times(0)).save(any(Team.class));
+    }
+
+
+    @Test
+    @DisplayName("Assign existing agent to the team - ")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenReturnAssignedMemberToTeam() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException {
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        agent.get().setTeam(null);
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+
+        when(agentRepo.findById(5L)).thenReturn(agent);
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+        TeamDto teamDto = teamService.assignAgent(1L, 5L);
+
+        assertNotNull(teamDto);
+        assertEquals(3, teamDto.getId());
+        assertEquals("Mongo", teamDto.getName());
+        verify(teamRepo, times(1)).save(any(Team.class));
+    }
+
 }

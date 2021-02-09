@@ -1,6 +1,9 @@
 package com.xib.assessment.controller;
 
 import com.xib.assessment.dto.TeamDto;
+import com.xib.assessment.exception.AgentAlreadyAssignedException;
+import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.TeamNotFoundException;
 import com.xib.assessment.service.TeamService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,8 +42,8 @@ public class TeamCtrl {
         return teamService.saveTeam(team);
     }
 
-//    @PutMapping(value = "/{id}/agent/{aid}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public  assignAgentToTeam(@PathVariable("id") Long id, @PathVariable("aid") Long agentId){
-//
-//    }
+    @PutMapping(value = "/{id}/agent/{agent-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public TeamDto assignAgentToTeam(@PathVariable("id") Long id, @PathVariable("agent-id") Long agentId) throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException {
+      return teamService.assignAgent(id, agentId);
+    }
 }

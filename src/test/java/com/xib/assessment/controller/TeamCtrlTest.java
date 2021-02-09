@@ -50,11 +50,11 @@ class TeamCtrlTest {
                 .get("/team")
                 .then()
                 .body("[0]", Matchers.notNullValue())
-                .body("[0].name", Matchers.is("Marvel"))
-                .body("[0].id", Matchers.is(2))
+                .body("[0].name", Matchers.is("DC"))
+                .body("[0].id", Matchers.is(1))
                 .body("[1]", Matchers.notNullValue())
-                .body("[1].name", Matchers.is("DC"))
-                .body("[1].id", Matchers.is(1))
+                .body("[1].name", Matchers.is("Marvel"))
+                .body("[1].id", Matchers.is(2))
                 .assertThat()
                 .statusCode(200);
 
@@ -84,13 +84,10 @@ class TeamCtrlTest {
     @Test
     void createNewTeam() throws Exception {
         TeamDto team = new TeamDto(3L, "Zim");
-
         when(teamService.saveTeam(team)).thenReturn(team);
-
 
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(team);
-
 
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

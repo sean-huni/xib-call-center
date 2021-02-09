@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,10 +20,9 @@ public class Manager extends AbstractModelClass {
     private String lastName;
     private String email;
 
-    @ManyToMany
-    @JoinTable(name = "managed_teams", joinColumns = @JoinColumn(name = "manager_id"), inverseJoinColumns = @JoinColumn(name = "team_id"))
+    @OneToMany(mappedBy = "manager")
     @Setter(value = AccessLevel.NONE)
-    private Collection<Team> managedTeams = new ArrayList<>();
+    private Collection<ManagedTeam> managedTeam = new ArrayList<>();
 
 
     public Manager(Long id, String firstName, String lastName, String email) {
@@ -35,7 +32,7 @@ public class Manager extends AbstractModelClass {
         this.email = email;
     }
 
-    public void setManagedTeams(Collection<Team> teams) {
-        this.managedTeams.addAll(teams);
+    public void setManagedTeams(Collection<ManagedTeam> teams) {
+        this.managedTeam.addAll(teams);
     }
 }

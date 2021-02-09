@@ -45,7 +45,7 @@ class AgentCtrlTest {
     @Test
     @DisplayName("Find Agent by Id - HTTP.GET")
     void givenAgentCtrl_whenGetAgentById_thenReturnMockedAgent() {
-        AgentDto agent = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
+        AgentDto agent = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null, null));
 
         when(agentService.findAgentById(999L)).thenReturn(agent);
 
@@ -116,8 +116,8 @@ class AgentCtrlTest {
     @Test
     @DisplayName("Create new Agent - HTTP.POST")
     void givenAgent_whenCreatingNewAgent_thenReturnNewAgent() throws JsonProcessingException {
-        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
-        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null,null));
+        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null,null));
 
         when(agentService.saveAgent(agent)).thenReturn(agentResp);
 
@@ -138,8 +138,8 @@ class AgentCtrlTest {
     @Test
     @DisplayName("Create new Agent Negative Test - HTTP.POST")
     void givenAgent_whenCreatingNewAgentNegative_thenReturnNewAgent() throws JsonProcessingException {
-        AgentDto agent = new AgentDto(null, "Sean", "Huni", "150", new TeamDto(1L, "DC", null));
-        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null));
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "150", new TeamDto(1L, "DC", null,null));
+        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC",null, null));
 
         when(agentService.saveAgent(agent)).thenReturn(agentResp);
 
