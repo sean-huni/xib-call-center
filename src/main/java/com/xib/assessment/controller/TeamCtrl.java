@@ -23,7 +23,7 @@ public class TeamCtrl {
         this.teamService = teamService;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<TeamDto> findAllTeams() {
         return teamService.findAllTeams();
     }

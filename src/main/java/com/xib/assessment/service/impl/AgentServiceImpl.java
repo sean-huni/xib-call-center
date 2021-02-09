@@ -99,7 +99,8 @@ public class AgentServiceImpl implements AgentService {
      */
     @Override
     public AgentDto saveAgent(AgentDto agent) {
-        Agent agentSaved = agentRepo.save(toAgentConverter.convert(agent));
+        Agent agentModel = toAgentConverter.convert(agent);
+        Agent agentSaved = agentRepo.save(agentModel);
 
         return toAgentDtoConverter.convert(agentSaved);
     }

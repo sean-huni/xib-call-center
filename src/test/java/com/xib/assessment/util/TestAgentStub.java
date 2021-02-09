@@ -4,12 +4,11 @@ import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.persistence.model.Agent;
 import com.xib.assessment.persistence.model.Team;
-import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class TestCases {
+public class TestAgentStub {
 
 
     public static Collection<AgentDto> getAgents() {
@@ -24,6 +23,7 @@ public class TestCases {
 
         return agents;
     }
+
     public static Collection<Agent> getAgentsModel() {
         Collection<Agent> agents = new ArrayList<>();
 

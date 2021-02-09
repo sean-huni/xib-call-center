@@ -1,14 +1,12 @@
 package com.xib.assessment.dto;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.Getter;
 
-@Data
-@ToString
+@Getter
 public class ErrorDto {
-    private String field;
-    private String rejectedValue;
-    private String message;
+    private final String field;
+    private final String rejectedValue;
+    private final String message;
 
     public ErrorDto(Builder builder) {
         this.field = builder.field;

@@ -6,24 +6,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class AssessmentApplicationTests {
-	@Autowired
-	private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
 
-	@BeforeEach
-	void setup(){
+    @BeforeEach
+    void setup() {
 
-	}
+    }
 
-	@Test
-	@DisplayName("Load Spring Context Successfully")
-	void contextLoads() {
-		assertNotNull(context);
-	}
+    @Test
+    @DisplayName("Load Spring Context Successfully")
+    void contextLoads() {
+        assertNotNull(context);
+    }
 
 }

@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.convert.converter.Converter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 class ToAgentDtoTest {
@@ -39,5 +41,13 @@ class ToAgentDtoTest {
         assertEquals("Huni", resp.getLastName());
         assertEquals("1501246344184", resp.getIdNumber());
         assertNull(resp.getTeamDto());
+    }
+
+    @Test
+    void givenAgentConverter_whenConvertingFromAgentToNull() {
+
+        AgentDto resp = toAgentDto.convert(null);
+
+        assertNull(resp);
     }
 }
