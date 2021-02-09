@@ -1,6 +1,5 @@
 package com.xib.assessment.persistence.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import javax.persistence.ManyToOne;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 public class Agent extends AbstractModelClass {
 

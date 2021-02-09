@@ -1,16 +1,14 @@
 package com.xib.assessment.persistence.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
 public class Manager extends AbstractModelClass {
     private String firstName;
