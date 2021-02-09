@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +27,10 @@ public class Team extends AbstractModelClass {
     @OneToMany(mappedBy = "team")
     @Setter(value = AccessLevel.NONE)
     private Collection<Agent> agents = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "managedTeams")
+    @Setter(value = AccessLevel.NONE)
+    private Collection<Manager> managers = new ArrayList<>();
 
     public Team(Long id, String name) {
         setId(id);
