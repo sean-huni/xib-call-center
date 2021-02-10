@@ -12,6 +12,7 @@ import com.xib.assessment.exception.TeamNotFoundException;
 import com.xib.assessment.persistence.model.Manager;
 import com.xib.assessment.service.TeamManagementService;
 import com.xib.assessment.service.TeamService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,8 +56,14 @@ public class TeamCtrl {
       return teamService.assignAgent(id, agentId);
     }
 
-    @PutMapping(value = "/{id}/manger/{manager-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/manager/{manager-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ManagerDto assignMangerToTeam(@PathVariable("id") Long id, @PathVariable("manager-id") Long managerId) throws TeamNotFoundException, ManagerNotFoundException, ManagerAlreadyAssignedException, ManagedTeamException {
       return teamManagementService.assignManager(id, managerId);
+    }
+
+
+    @Autowired
+    public void setTeamManagementService(TeamManagementService teamManagementService) {
+        this.teamManagementService = teamManagementService;
     }
 }
