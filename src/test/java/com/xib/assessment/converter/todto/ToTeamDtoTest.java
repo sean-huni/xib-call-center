@@ -18,24 +18,21 @@ class ToTeamDtoTest {
     private Converter<Team, TeamDto> toTeamDto;
 
     @Test
-    @DisplayName("")
+    @DisplayName("Converting to TeamDto from Team")
     void givenTeamConverter_whenConvertingFromTeamToTeamDto_thenReturnTeamDto() {
         Team agentResp = new Team(1L, "Jumbo");
-
         TeamDto resp = toTeamDto.convert(agentResp);
-
         assertEquals(1, resp.getId());
         assertEquals("Jumbo", resp.getName());
         assertTrue(resp.getAgentDtoCollection().isEmpty());
     }
 
-
     @Test
+    @DisplayName("Converting to TeamDto from Null value")
     void givenTeamConverter_whenConvertingFromTeamDtoToTeam_thenReturnNull() {
         TeamDto resp = toTeamDto.convert(null);
 
         assertNull(resp);
     }
-
 
 }

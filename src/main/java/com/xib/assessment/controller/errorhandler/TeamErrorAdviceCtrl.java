@@ -44,17 +44,17 @@ public class TeamErrorAdviceCtrl extends  MessageSourceCtrlAdvice{
     }
 
     private ErrorDto buildErrorMsg(AgentNotFoundException ex){
-        String errorResp = extractMessageSource(ex.getMessage());
+        String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
         return new ErrorDto.Builder("agent-id", ex.getId().toString()).setMessage(errorResp).build();
     }
 
     private ErrorDto buildErrorMsg(TeamNotFoundException ex){
-        String errorResp = extractMessageSource(ex.getMessage());
+        String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
         return new ErrorDto.Builder("id", ex.getId().toString()).setMessage(errorResp).build();
     }
 
     private ErrorDto buildErrorMsg(AgentAlreadyAssignedException ex){
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getAgentId(), ex.getTeamId());
-        return new ErrorDto.Builder("agent-id", ex.getTeamId().toString()).setMessage(errorResp).build();
+        return new ErrorDto.Builder("agent-id", ex.getAgentId().toString()).setMessage(errorResp).build();
     }
 }

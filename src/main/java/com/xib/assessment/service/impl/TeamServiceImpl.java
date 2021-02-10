@@ -63,11 +63,11 @@ public class TeamServiceImpl implements TeamService {
 
         Optional<Agent> a = agentRepo.findById(agentId);
         if (!a.isPresent()) {
-            throw new AgentNotFoundException("validation.error.notFound.agent", id);
+            throw new AgentNotFoundException("validation.error.notFound.agent", agentId);
         }
 
         //Check is the agent is already assigned to another team.
-        if (Objects.nonNull(a.get().getTeam()) && Objects.isNull(a.get().getTeam().getId())) {
+        if (Objects.nonNull(a.get().getTeam()) && Objects.nonNull(a.get().getTeam().getId())) {
             throw new AgentAlreadyAssignedException("validation.error.assigned.team", agentId, a.get().getTeam().getId());
         }
 

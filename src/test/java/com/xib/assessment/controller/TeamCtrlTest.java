@@ -3,15 +3,20 @@ package com.xib.assessment.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.dto.TeamDto;
+import com.xib.assessment.exception.AgentAlreadyAssignedException;
+import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.TeamNotFoundException;
 import com.xib.assessment.service.TeamService;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Collection;
@@ -101,5 +106,62 @@ class TeamCtrlTest {
                 .statusCode(200).log();
 
         verify(teamService, times(1)).saveTeam(team);
+    }
+
+    @Test
+    @DisplayName("Assigning Agent To Team - ThrowTeamNotFoundException")
+    void givenTeamController_whenAssigningAgentToTeam_thenThrowTeamNotFoundException() throws Exception {
+        when(teamService.assignAgent(2L, 3L)).thenThrow(new TeamNotFoundException("validation.error.notFound.team", 2L));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/agent/{agent-id}", 2L, 3L)
+                .then()
+                .body("field", Matchers.is("id"))
+                .body("rejectedValue", Matchers.is("2"))
+                .body("message", Matchers.is("Team-ID: 2 does not exist"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamService, times(1)).assignAgent(2L, 3L);
+    }
+
+    @Test
+    @DisplayName("Assigning Agent To Team - AgentNotFoundException")
+    void givenTeamController_whenAssigningAgentToTeam_thenThrowAgentNotFoundException() throws Exception {
+        when(teamService.assignAgent(2L, 7L)).thenThrow(new AgentNotFoundException("validation.error.notFound.agent", 7L));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/agent/{agent-id}", 2L, 7L)
+                .then()
+                .body("field", Matchers.is("agent-id"))
+                .body("rejectedValue", Matchers.is("7"))
+                .body("message", Matchers.is("Agent-ID: 7 does not exist"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamService, times(1)).assignAgent(2L, 7L);
+    }
+
+    @Test
+    @DisplayName("Assigning Agent To Team - AgentAlreadyAssignedException")
+    void givenTeamController_whenAssigningAgentToTeam_thenThrowAgentAlreadyAssignedException() throws Exception {
+        when(teamService.assignAgent(8L, 9L)).thenThrow(new AgentAlreadyAssignedException("validation.error.assigned.team", 9L, 8L));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/agent/{agent-id}", 8L, 9L)
+                .then()
+                .body("field", Matchers.is("agent-id"))
+                .body("rejectedValue", Matchers.is("9"))
+                .body("message", Matchers.is("Agent-ID: 9 already assigned to Team-ID: 8"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamService, times(1)).assignAgent(8L, 9L);
     }
 }

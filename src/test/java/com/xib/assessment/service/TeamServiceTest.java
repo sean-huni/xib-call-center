@@ -85,7 +85,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Assign existing agent to the team - Throw AgentAlreadyAssignedException")
     void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenThrowAgentAlreadyAssignedException() {
-        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findAny();
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findFirst();
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         expectedResp.get().getAgents().add(agent.get());
 
@@ -101,9 +101,43 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("An agent cannot be reassigned to an existing team - Throw AgentAlreadyAssignedException")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_withAnAgentCannotBeReassignedToAnExistingTeam_thenThrowAgentAlreadyAssignedException() {
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findFirst();
+        agent.get().setTeam(null);
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        expectedResp.get().getAgents().add(agent.get());
+
+        when(agentRepo.findById(1L)).thenReturn(agent);
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+        AgentAlreadyAssignedException exception = assertThrows(AgentAlreadyAssignedException.class, () -> teamService.assignAgent(1L, 1L));
+        assertEquals("validation.error.assigned.team", exception.getMessage());
+        assertEquals(1, exception.getAgentId());
+        assertEquals(1, exception.getTeamId());
+        verify(teamRepo, times(0)).save(any(Team.class));
+    }
+
+    @Test
+    @DisplayName("Assign existing agent to the team when Agent-ID does not exist - Throw AgentAlreadyAssignedException2")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_andAgentIdDoesNotExist_thenThrowAgentAlreadyAssignedException() {
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+
+        when(agentRepo.findById(1L)).thenReturn(Optional.empty());
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+        AgentNotFoundException exception = assertThrows(AgentNotFoundException.class, () -> teamService.assignAgent(1L, 1L));
+        assertEquals("validation.error.notFound.agent", exception.getMessage());
+        assertEquals(1, exception.getId());
+        verify(teamRepo, times(0)).save(expectedResp.get());
+    }
+
+    @Test
     @DisplayName("Assign existing agent to the team - Throw TeamNotFoundException")
     void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenThrowTeamNotFoundException() {
-        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findAny();
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findFirst();
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         expectedResp.get().getAgents().add(agent.get());
 
