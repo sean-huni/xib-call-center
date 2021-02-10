@@ -94,7 +94,7 @@ class TeamServiceTest {
         when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
 
         AgentAlreadyAssignedException exception = assertThrows(AgentAlreadyAssignedException.class, () -> teamService.assignAgent(1L, 1L));
-        assertEquals("validation.error.assigned.team", exception.getMessage());
+        assertEquals("validation.error.assigned.agent.team", exception.getMessage());
         assertEquals(1, exception.getAgentId());
         assertEquals(1, exception.getTeamId());
         verify(teamRepo, times(0)).save(any(Team.class));
@@ -113,7 +113,7 @@ class TeamServiceTest {
         when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
 
         AgentAlreadyAssignedException exception = assertThrows(AgentAlreadyAssignedException.class, () -> teamService.assignAgent(1L, 1L));
-        assertEquals("validation.error.assigned.team", exception.getMessage());
+        assertEquals("validation.error.assigned.agent.team", exception.getMessage());
         assertEquals(1, exception.getAgentId());
         assertEquals(1, exception.getTeamId());
         verify(teamRepo, times(0)).save(any(Team.class));

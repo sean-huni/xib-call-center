@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public class TeamNotFoundException extends Exception {
     @Getter
-    private Long id;
+    private final Long id;
 
     /**
      * Constructs a new exception with the specified detail message.  The

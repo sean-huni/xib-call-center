@@ -43,8 +43,10 @@ public class LoadTestData {
         createAgent("Rimo", "Bingo", "5905115190012", team3);
 
         Manager manager1 = createManager("Top", "Doug", "fake@email.com");
+        Manager manager2 = createManager("Dez", "Bizz", "test@email.com");
         saveManagedTeam(manager1, team1);
         saveManagedTeam(manager1, team2);
+        saveManagedTeam(manager2, team1);
     }
 
     private Team createTeam(String name) {

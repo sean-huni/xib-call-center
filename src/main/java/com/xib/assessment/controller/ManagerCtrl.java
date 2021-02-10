@@ -24,7 +24,6 @@ public class ManagerCtrl {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<ManagerDto> findAllManagers() {
         return managerService.findAllManagers();
     }

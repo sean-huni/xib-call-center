@@ -68,14 +68,14 @@ public class TeamServiceImpl implements TeamService {
 
         //Check is the agent is already assigned to another team.
         if (Objects.nonNull(a.get().getTeam()) && Objects.nonNull(a.get().getTeam().getId())) {
-            throw new AgentAlreadyAssignedException("validation.error.assigned.team", agentId, a.get().getTeam().getId());
+            throw new AgentAlreadyAssignedException("validation.error.assigned.agent.team", agentId, a.get().getTeam().getId());
         }
 
-        //An agent cannot be reassigned to an existing team
+        //An agent cannot be reassigned to a team that they're already assigned to
         if (!t.get().getAgents().contains(a.get())) {
             t.get().getAgents().add(a.get());
         } else {
-            throw new AgentAlreadyAssignedException("validation.error.assigned.team", agentId, id);
+            throw new AgentAlreadyAssignedException("validation.error.assigned.agent.team", agentId, id);
         }
 
         return teamDtoConverter.convert(teamRepo.save(t.get()));
