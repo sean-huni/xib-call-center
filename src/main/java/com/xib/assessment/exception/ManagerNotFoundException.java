@@ -2,7 +2,7 @@ package com.xib.assessment.exception;
 
 import lombok.Getter;
 
-public class AgentNotFoundException extends Exception{
+public class ManagerNotFoundException extends Exception{
     @Getter
     private final Long id;
     /**
@@ -14,7 +14,7 @@ public class AgentNotFoundException extends Exception{
      *                later retrieval by the {@link #getMessage()} method.
      * @param id
      */
-    public AgentNotFoundException(String message, Long id) {
+    public ManagerNotFoundException(String message, Long id) {
         super(message);
         this.id = id;
     }

@@ -149,7 +149,7 @@ class TeamCtrlTest {
     @Test
     @DisplayName("Assigning Agent To Team - AgentAlreadyAssignedException")
     void givenTeamController_whenAssigningAgentToTeam_thenThrowAgentAlreadyAssignedException() throws Exception {
-        when(teamService.assignAgent(8L, 9L)).thenThrow(new AgentAlreadyAssignedException("validation.error.assigned.team", 9L, 8L));
+        when(teamService.assignAgent(8L, 9L)).thenThrow(new AgentAlreadyAssignedException("validation.error.assigned.agent.team", 9L, 8L));
 
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

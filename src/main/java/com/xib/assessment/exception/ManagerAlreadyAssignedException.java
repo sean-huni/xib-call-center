@@ -2,9 +2,10 @@ package com.xib.assessment.exception;
 
 import lombok.Getter;
 
-public class AgentNotFoundException extends Exception{
-    @Getter
-    private final Long id;
+@Getter
+public class ManagerAlreadyAssignedException extends Exception {
+    private final Long managerId;
+    private final Long teamId;
     /**
      * Constructs a new exception with the specified detail message.  The
      * cause is not initialized, and may subsequently be initialized by
@@ -12,10 +13,12 @@ public class AgentNotFoundException extends Exception{
      *
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
-     * @param id
+     * @param managerId
+     * @param teamId
      */
-    public AgentNotFoundException(String message, Long id) {
+    public ManagerAlreadyAssignedException(String message, Long managerId, Long teamId) {
         super(message);
-        this.id = id;
+        this.managerId = managerId;
+        this.teamId = teamId;
     }
 }
