@@ -56,12 +56,12 @@ public class LoadTestData {
         return teamRepo.save(t);
     }
 
-    private Manager createManager(String firstName, String lastName, String email){
+    private Manager createManager(String firstName, String lastName, String email) {
         Manager m = new Manager(null, firstName, lastName, email);
         return managerRepo.save(m);
     }
 
-    private void saveManagedTeam(Manager manager, Team team){
+    private void saveManagedTeam(Manager manager, Team team) {
         ManagedTeam m = new ManagedTeam();
         m.setManager(manager);
         m.setTeam(team);

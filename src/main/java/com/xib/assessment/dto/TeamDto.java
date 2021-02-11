@@ -1,5 +1,6 @@
 package com.xib.assessment.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.xib.assessment.persistence.model.ManagedTeam;
@@ -29,9 +30,11 @@ public class TeamDto {
 
     @JsonProperty("agents")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+//    @JsonIgnore
     private Collection<AgentDto> agentDtoCollection;
 
     @Setter(value = AccessLevel.NONE)
+    @JsonIgnore
     private Collection<ManagedTeam> managedTeams = new ArrayList<>();
 
     public TeamDto(Long id, String name) {

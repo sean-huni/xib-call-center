@@ -48,12 +48,12 @@ public class TeamManagementServiceImpl implements TeamManagementService {
 
         //Any one team can be managed by at most 2 managers
         Integer mangersInTeamCount = managedTeamRepo.countManagedTeamsByTeam_Id(teamId);
-        if(mangersInTeamCount >= MAX_ALLOWED_MANAGERS_PER_TEAM){
-           throw new ManagedTeamException("validation.error.assigned.managed.teams", teamId, MAX_ALLOWED_MANAGERS_PER_TEAM);
+        if (mangersInTeamCount >= MAX_ALLOWED_MANAGERS_PER_TEAM) {
+            throw new ManagedTeamException("validation.error.assigned.managed.teams", teamId, MAX_ALLOWED_MANAGERS_PER_TEAM);
         }
 
         //A manager cannot be reassigned to a team that they're already assigned to
-        if (t.get().getManagedTeams().parallelStream().noneMatch(mt-> managerId.equals(mt.getManager().getId()))) {
+        if (t.get().getManagedTeams().parallelStream().noneMatch(mt -> managerId.equals(mt.getManager().getId()))) {
             ManagedTeam mt = new ManagedTeam();
             mt.setTeam(t.get());
             mt.setManager(m.get());
@@ -62,7 +62,7 @@ public class TeamManagementServiceImpl implements TeamManagementService {
             Manager managerUnsaved = m.get();
             Manager savedManager = managerRepo.save(managerUnsaved);
 
-         return managerDtoConverter.convert(savedManager);
+            return managerDtoConverter.convert(savedManager);
         } else {
             throw new ManagerAlreadyAssignedException("validation.error.assigned.manager.team", managerId, teamId);
         }

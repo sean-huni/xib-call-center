@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Log4j2
 @RestControllerAdvice
-public class TeamErrorAdviceCtrl extends  MessageSourceCtrlAdvice{
+public class TeamErrorAdviceCtrl extends MessageSourceCtrlAdvice {
     protected TeamErrorAdviceCtrl(MessageSource messageSource) {
         super(messageSource);
     }
@@ -52,22 +52,22 @@ public class TeamErrorAdviceCtrl extends  MessageSourceCtrlAdvice{
         return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
     }
 
-    private ErrorDto buildErrorMsg(AgentNotFoundException ex){
+    private ErrorDto buildErrorMsg(AgentNotFoundException ex) {
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
         return new ErrorDto.Builder("agent-id", ex.getId().toString()).setMessage(errorResp).build();
     }
 
-    private ErrorDto buildErrorMsg(TeamNotFoundException ex){
+    private ErrorDto buildErrorMsg(TeamNotFoundException ex) {
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
         return new ErrorDto.Builder("id", ex.getId().toString()).setMessage(errorResp).build();
     }
 
-    private ErrorDto buildErrorMsg(AgentAlreadyAssignedException ex){
+    private ErrorDto buildErrorMsg(AgentAlreadyAssignedException ex) {
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getAgentId(), ex.getTeamId());
         return new ErrorDto.Builder("agent-id", ex.getAgentId().toString()).setMessage(errorResp).build();
     }
 
-    private ErrorDto buildErrorMsg(AgentTeamAssignmentException ex){
+    private ErrorDto buildErrorMsg(AgentTeamAssignmentException ex) {
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
         return new ErrorDto.Builder("agent-id", ex.getId().toString()).setMessage(errorResp).build();
     }

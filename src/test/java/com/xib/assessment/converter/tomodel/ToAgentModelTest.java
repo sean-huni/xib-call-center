@@ -21,7 +21,7 @@ public class ToAgentModelTest {
     @Test
     @DisplayName("Agent Converter - ToAgentModel Component")
     void givenAgentConverter_whenConvertingFromAgentToAgentDto_thenReturnAgent() {
-        AgentDto agentResp = new AgentDto(123L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC",null, null));
+        AgentDto agentResp = new AgentDto(123L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null, null));
 
         Agent resp = toAgentModel.convert(agentResp);
 
