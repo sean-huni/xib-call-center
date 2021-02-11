@@ -13,7 +13,6 @@ import com.xib.assessment.persistence.repo.AgentRepo;
 import com.xib.assessment.persistence.repo.TeamRepo;
 import com.xib.assessment.util.TeamStub;
 import com.xib.assessment.util.TestAgentStub;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,7 +168,7 @@ class TeamServiceTest {
         ManagedTeam managedTeam = new ManagedTeam();
         managedTeam.setManager(manager);
 
-        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a -> a.getId() == 5L).findFirst();
         agent.get().setTeam(null);
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         expectedResp.get().getManagedTeams().add(managedTeam);
@@ -194,7 +193,7 @@ class TeamServiceTest {
     void givenAgentIdAndTeamId_whenAssigningAgentToTeam_withNoManager_thenReturnThrowAgentTeamAssignmentException() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException, AgentTeamAssignmentException {
         Manager manager = new Manager(3142L, "Super", "Duper", "super@email.com");
 
-        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a -> a.getId() == 5L).findFirst();
         agent.get().setTeam(null);
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         agent.get().setReportsTo(manager);
@@ -220,7 +219,7 @@ class TeamServiceTest {
         ManagedTeam managedTeam = new ManagedTeam();
         managedTeam.setManager(manager);
 
-        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a -> a.getId() == 5L).findFirst();
         agent.get().setTeam(null);
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         expectedResp.get().getManagedTeams().add(managedTeam);
@@ -248,7 +247,7 @@ class TeamServiceTest {
         ManagedTeam managedTeam = new ManagedTeam();
         managedTeam.setManager(manager);
 
-        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a -> a.getId() == 5L).findFirst();
         agent.get().setTeam(null);
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         expectedResp.get().getManagedTeams().add(managedTeam);

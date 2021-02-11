@@ -8,5 +8,6 @@ import java.util.Collection;
 public interface ManagedTeamRepo extends JpaRepository<ManagedTeam, Long> {
 
     Collection<ManagedTeam> findManagedTeamsByTeamEquals(Long id);
+
     Integer countManagedTeamsByTeam_Id(Long id);
 }

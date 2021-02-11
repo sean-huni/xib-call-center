@@ -6,6 +6,7 @@ import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.service.AgentService;
 import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Collection;
@@ -116,8 +118,9 @@ class AgentCtrlTest {
     @Test
     @DisplayName("Create new Agent - HTTP.POST")
     void givenAgent_whenCreatingNewAgent_thenReturnNewAgent() throws JsonProcessingException {
-        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null,null));
-        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC", null,null));
+        RestAssured.defaultParser = Parser.JSON;
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184");
+        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184");
 
         when(agentService.saveAgent(agent)).thenReturn(agentResp);
 
@@ -126,20 +129,20 @@ class AgentCtrlTest {
 
         given()
                 .body(json)
-                .contentType("application/json;charset=UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("agent")
                 .then()
                 .body("id", Matchers.equalTo(1))
                 .assertThat()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value()).log();
     }
 
     @Test
     @DisplayName("Create new Agent Negative Test - HTTP.POST")
     void givenAgent_whenCreatingNewAgentNegative_thenReturnNewAgent() throws JsonProcessingException {
-        AgentDto agent = new AgentDto(null, "Sean", "Huni", "150", new TeamDto(1L, "DC", null,null));
-        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184", new TeamDto(1L, "DC",null, null));
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "150");
+        AgentDto agentResp = new AgentDto(1L, "Sean", "Huni", "1501246344184");
 
         when(agentService.saveAgent(agent)).thenReturn(agentResp);
 
