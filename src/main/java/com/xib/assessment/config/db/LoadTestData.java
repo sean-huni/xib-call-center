@@ -35,18 +35,19 @@ public class LoadTestData {
         Team team3 = createTeam("Unknown");
         Team team4 = createTeam("Unassigned");
 
-        createAgent("Bruce", "Banner", "1011125190081", team1);
-        createAgent("Tony", "Stark", "6912115191083", team1);
-        createAgent("Peter", "Parker", "7801115190084", team1);
-        createAgent("Bruce", "Wayne", "6511185190085", team2);
-        createAgent("Clark", "Kent", "5905115190086", team2);
-        createAgent("Rimo", "Bingo", "5905115190012", team3);
-
         Manager manager1 = createManager("Top", "Doug", "fake@email.com");
         Manager manager2 = createManager("Dez", "Bizz", "test@email.com");
         saveManagedTeam(manager1, team1);
         saveManagedTeam(manager1, team2);
         saveManagedTeam(manager2, team1);
+
+        createAgent("Bruce", "Banner", "1011125190081", manager1, team1);
+        createAgent("Tony", "Stark", "6912115191083", manager1, team1);
+        createAgent("Peter", "Parker", "7801115190084", manager1, team1);
+        createAgent("Bruce", "Wayne", "6511185190085", manager2, team2);
+        createAgent("Clark", "Kent", "5905115190086", manager2, team2);
+        createAgent("Rimo", "Bingo", "5905115190012", manager1, null);
+
     }
 
     private Team createTeam(String name) {
@@ -67,11 +68,12 @@ public class LoadTestData {
         managedTeamRepo.save(m);
     }
 
-    private Agent createAgent(String firstName, String lastName, String idNumber, Team team) {
+    private Agent createAgent(String firstName, String lastName, String idNumber, Manager reportsTop, Team team) {
         Agent a = new Agent();
         a.setFirstName(firstName);
         a.setLastName(lastName);
         a.setIdNumber(idNumber);
+        a.setReportsTo(reportsTop);
         a.setTeam(team);
         return agentRepo.save(a);
     }

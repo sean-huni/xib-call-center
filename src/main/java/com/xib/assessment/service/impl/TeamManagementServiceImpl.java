@@ -59,7 +59,10 @@ public class TeamManagementServiceImpl implements TeamManagementService {
             mt.setManager(m.get());
             m.get().getManagedTeam().add(mt);
 
-         return managerDtoConverter.convert(managerRepo.save(m.get()));
+            Manager managerUnsaved = m.get();
+            Manager savedManager = managerRepo.save(managerUnsaved);
+
+         return managerDtoConverter.convert(savedManager);
         } else {
             throw new ManagerAlreadyAssignedException("validation.error.assigned.manager.team", managerId, teamId);
         }

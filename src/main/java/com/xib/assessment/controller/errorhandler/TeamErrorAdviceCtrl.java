@@ -3,6 +3,7 @@ package com.xib.assessment.controller.errorhandler;
 import com.xib.assessment.dto.ErrorDto;
 import com.xib.assessment.exception.AgentAlreadyAssignedException;
 import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.AgentTeamAssignmentException;
 import com.xib.assessment.exception.TeamNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
@@ -43,6 +44,14 @@ public class TeamErrorAdviceCtrl extends  MessageSourceCtrlAdvice{
         return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AgentTeamAssignmentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<ErrorDto> handleAgentNotFoundException(AgentTeamAssignmentException ex) {
+        log.warn(ex.getMessage(), ex);
+        ErrorDto err = buildErrorMsg(ex);
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+    }
+
     private ErrorDto buildErrorMsg(AgentNotFoundException ex){
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
         return new ErrorDto.Builder("agent-id", ex.getId().toString()).setMessage(errorResp).build();
@@ -56,5 +65,10 @@ public class TeamErrorAdviceCtrl extends  MessageSourceCtrlAdvice{
     private ErrorDto buildErrorMsg(AgentAlreadyAssignedException ex){
         String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getAgentId(), ex.getTeamId());
         return new ErrorDto.Builder("agent-id", ex.getAgentId().toString()).setMessage(errorResp).build();
+    }
+
+    private ErrorDto buildErrorMsg(AgentTeamAssignmentException ex){
+        String errorResp = String.format(extractMessageSource(ex.getMessage()), ex.getId());
+        return new ErrorDto.Builder("agent-id", ex.getId().toString()).setMessage(errorResp).build();
     }
 }

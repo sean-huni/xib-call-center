@@ -3,13 +3,17 @@ package com.xib.assessment.service;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.exception.AgentAlreadyAssignedException;
 import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.AgentTeamAssignmentException;
 import com.xib.assessment.exception.TeamNotFoundException;
 import com.xib.assessment.persistence.model.Agent;
+import com.xib.assessment.persistence.model.ManagedTeam;
+import com.xib.assessment.persistence.model.Manager;
 import com.xib.assessment.persistence.model.Team;
 import com.xib.assessment.persistence.repo.AgentRepo;
 import com.xib.assessment.persistence.repo.TeamRepo;
 import com.xib.assessment.util.TeamStub;
 import com.xib.assessment.util.TestAgentStub;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,10 +107,16 @@ class TeamServiceTest {
     @Test
     @DisplayName("An agent cannot be reassigned to an existing team - Throw AgentAlreadyAssignedException")
     void givenAgentIdAndTeamId_whenAssigningAgentToTeam_withAnAgentCannotBeReassignedToAnExistingTeam_thenThrowAgentAlreadyAssignedException() {
+        Manager manager = new Manager(300L, "Super", "Duper", "super@email.com");
+        ManagedTeam managedTeam = new ManagedTeam();
+        managedTeam.setManager(manager);
+
         Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().findFirst();
         agent.get().setTeam(null);
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
         expectedResp.get().getAgents().add(agent.get());
+        expectedResp.get().getManagedTeams().add(managedTeam);
+        agent.get().setReportsTo(manager);
 
         when(agentRepo.findById(1L)).thenReturn(agent);
         when(teamRepo.findById(1L)).thenReturn(expectedResp);
@@ -154,10 +164,16 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Assign existing agent to the team - ")
-    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenReturnAssignedMemberToTeam() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException {
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_thenReturnAssignedMemberToTeam() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException, AgentTeamAssignmentException {
+        Manager manager = new Manager(3141L, "Super", "Duper", "super@email.com");
+        ManagedTeam managedTeam = new ManagedTeam();
+        managedTeam.setManager(manager);
+
         Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
         agent.get().setTeam(null);
         Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        expectedResp.get().getManagedTeams().add(managedTeam);
+        agent.get().setReportsTo(manager);
 
         when(agentRepo.findById(5L)).thenReturn(agent);
         when(teamRepo.findById(1L)).thenReturn(expectedResp);
@@ -171,5 +187,85 @@ class TeamServiceTest {
         assertEquals("Mongo", teamDto.getName());
         verify(teamRepo, times(1)).save(any(Team.class));
     }
+
+
+    @Test
+    @DisplayName("Assign existing agent to the team that has no Manager - Throws AgentTeamAssignmentException")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_withNoManager_thenReturnThrowAgentTeamAssignmentException() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException, AgentTeamAssignmentException {
+        Manager manager = new Manager(3142L, "Super", "Duper", "super@email.com");
+
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        agent.get().setTeam(null);
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        agent.get().setReportsTo(manager);
+
+        when(agentRepo.findById(5L)).thenReturn(agent);
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+
+        AgentTeamAssignmentException exception = assertThrows(AgentTeamAssignmentException.class, () -> teamService.assignAgent(1L, 5L));
+
+        assertNotNull(exception);
+        assertEquals("validation.error.assigned.agent.manager", exception.getMessage());
+        assertEquals(5, exception.getId());
+        verify(teamRepo, times(0)).save(any(Team.class));
+    }
+
+    @Test
+    @DisplayName("Assign existing agent to the team. Agent does not report to any manager")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_withAgentReportingToNoManager_thenReturnThrowAgentTeamAssignmentException() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException, AgentTeamAssignmentException {
+        Manager manager = new Manager(3158L, "Super", "Duper", "super@email.com");
+        ManagedTeam managedTeam = new ManagedTeam();
+        managedTeam.setManager(manager);
+
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        agent.get().setTeam(null);
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        expectedResp.get().getManagedTeams().add(managedTeam);
+        agent.get().setReportsTo(null);
+
+        when(agentRepo.findById(5L)).thenReturn(agent);
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+
+        AgentTeamAssignmentException exception = assertThrows(AgentTeamAssignmentException.class, () -> teamService.assignAgent(1L, 5L));
+
+        assertNotNull(exception);
+        assertEquals("validation.error.assigned.agent.manager", exception.getMessage());
+        assertEquals(5, exception.getId());
+        verify(teamRepo, times(0)).save(any(Team.class));
+    }
+
+
+    @Test
+    @DisplayName("Assign existing agent to the team. Agent reports to a different manager")
+    void givenAgentIdAndTeamId_whenAssigningAgentToTeam_withAgentReportingToDifferentManager_thenReturnThrowAgentTeamAssignmentException() throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException, AgentTeamAssignmentException {
+        Manager manager = new Manager(3158L, "Super", "Duper", "super@email.com");
+        Manager managerDifferent = new Manager(5012L, "Razzy", "Rizzy", "rizzy@email.com");
+        ManagedTeam managedTeam = new ManagedTeam();
+        managedTeam.setManager(manager);
+
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a-> a.getId()==5L).findFirst();
+        agent.get().setTeam(null);
+        Optional<Team> expectedResp = Optional.of(TeamStub.getTeam());
+        expectedResp.get().getManagedTeams().add(managedTeam);
+        agent.get().setReportsTo(managerDifferent);
+
+        when(agentRepo.findById(5L)).thenReturn(agent);
+        when(teamRepo.findById(1L)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp.get());
+
+
+        AgentTeamAssignmentException exception = assertThrows(AgentTeamAssignmentException.class, () -> teamService.assignAgent(1L, 5L));
+
+        assertNotNull(exception);
+        assertEquals("validation.error.assigned.agent.manager", exception.getMessage());
+        assertEquals(5, exception.getId());
+        verify(teamRepo, times(0)).save(any(Team.class));
+    }
+
 
 }

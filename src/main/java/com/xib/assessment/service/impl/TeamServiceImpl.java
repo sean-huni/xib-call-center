@@ -3,8 +3,10 @@ package com.xib.assessment.service.impl;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.exception.AgentAlreadyAssignedException;
 import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.AgentTeamAssignmentException;
 import com.xib.assessment.exception.TeamNotFoundException;
 import com.xib.assessment.persistence.model.Agent;
+import com.xib.assessment.persistence.model.ManagedTeam;
 import com.xib.assessment.persistence.model.Team;
 import com.xib.assessment.persistence.repo.AgentRepo;
 import com.xib.assessment.persistence.repo.TeamRepo;
@@ -15,8 +17,10 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -40,12 +44,15 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Collection<TeamDto> findAllTeams() {
-        return teamRepo.findAll().stream().map(t -> teamDtoConverter.convert(t)).collect(Collectors.toList());
+       List<Team> teams = teamRepo.findAll();
+        Collection<TeamDto> teamDtoCollection = teams.stream().map(teamDtoConverter::convert).collect(Collectors.toList());
+        return teamDtoCollection;
     }
 
     @Override
     public TeamDto findTeamById(Long id) {
-        return teamDtoConverter.convert(teamRepo.findById(id).orElse(null));
+        Team team = teamRepo.findById(id).orElse(null);
+        return teamDtoConverter.convert(team);
     }
 
     @Override
@@ -55,7 +62,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamDto assignAgent(Long id, Long agentId) throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException {
+    public TeamDto assignAgent(Long id, Long agentId) throws TeamNotFoundException, AgentNotFoundException, AgentAlreadyAssignedException, AgentTeamAssignmentException {
         Optional<Team> t = teamRepo.findById(id);
         if (!t.isPresent()) {
             throw new TeamNotFoundException("validation.error.notFound.team", id);
@@ -69,6 +76,13 @@ public class TeamServiceImpl implements TeamService {
         //Check is the agent is already assigned to another team.
         if (Objects.nonNull(a.get().getTeam()) && Objects.nonNull(a.get().getTeam().getId())) {
             throw new AgentAlreadyAssignedException("validation.error.assigned.agent.team", agentId, a.get().getTeam().getId());
+        }
+
+        //Check if the Agent reports to any Manager
+        //Check If the Manager that the agent reports to is also managing the team that agent wishes to join.
+        Set<ManagedTeam> teams = !t.get().getManagedTeams().isEmpty() && Objects.nonNull(a.get().getReportsTo()) ? t.get().getManagedTeams().stream().filter(mt -> Objects.nonNull(mt.getManager()) && a.get().getReportsTo().getId().equals(mt.getManager().getId())).collect(Collectors.toSet()) : null;
+        if (teams == null || teams.isEmpty()) {
+            throw new AgentTeamAssignmentException("validation.error.assigned.agent.manager", agentId);
         }
 
         //An agent cannot be reassigned to a team that they're already assigned to
