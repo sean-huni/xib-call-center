@@ -10,18 +10,17 @@ import javax.persistence.ManyToOne;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ManagedTeam extends AbstractModelClass{
-
-    public ManagedTeam() {
-        super();
-    }
+public class ManagedTeam extends AbstractModelClass {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
-
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
+
+    public ManagedTeam() {
+        super();
+    }
 
 }

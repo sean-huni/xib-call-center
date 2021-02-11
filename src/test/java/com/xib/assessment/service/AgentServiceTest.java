@@ -90,7 +90,7 @@ class AgentServiceTest {
     @Test
     @DisplayName("Given AgentService, when mocking AgentRepo, Save New Agent")
     void givenAgentService_whenMockingAgentRepo_andSaveNewAgent_thenReturnAgentDto() {
-        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(2L, "DC",null, null));
+        AgentDto agent = new AgentDto(null, "Sean", "Huni", "1501246344184", new TeamDto(2L, "DC", null, null));
         Agent agentResp = new Agent(9L, "Sean", "Huni", "1501246344184", new Team(2L, "DC", null));
 
         when(agentRepo.save(any(Agent.class))).thenReturn(agentResp);

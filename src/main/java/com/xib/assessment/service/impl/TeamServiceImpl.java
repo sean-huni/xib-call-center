@@ -44,7 +44,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Collection<TeamDto> findAllTeams() {
-       List<Team> teams = teamRepo.findAll();
+        List<Team> teams = teamRepo.findAll();
         Collection<TeamDto> teamDtoCollection = teams.stream().map(teamDtoConverter::convert).collect(Collectors.toList());
         return teamDtoCollection;
     }
