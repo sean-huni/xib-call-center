@@ -1,6 +1,6 @@
 package com.xib.assessment.controller;
 
-import com.xib.assessment.dto.ManagerDto;
+import com.xib.assessment.dto.ManagedTeamDto;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.exception.AgentAlreadyAssignedException;
 import com.xib.assessment.exception.AgentNotFoundException;
@@ -56,7 +56,7 @@ public class TeamCtrl {
     }
 
     @PutMapping(value = "/{id}/manager/{manager-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ManagerDto assignMangerToTeam(@PathVariable("id") Long id, @PathVariable("manager-id") Long managerId) throws TeamNotFoundException, ManagerNotFoundException, ManagerAlreadyAssignedException, ManagedTeamException {
+    public ManagedTeamDto assignMangerToTeam(@PathVariable("id") Long id, @PathVariable("manager-id") Long managerId) throws TeamNotFoundException, ManagerNotFoundException, ManagerAlreadyAssignedException, ManagedTeamException {
         return teamManagementService.assignManager(id, managerId);
     }
 

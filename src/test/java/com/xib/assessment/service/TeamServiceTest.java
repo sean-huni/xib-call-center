@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,15 +76,21 @@ class TeamServiceTest {
     void givenTeamService_whenSaveNewTeam_thenReturnSavedTeam() {
         Team team = TeamStub.getTeam();
         team.setId(null);
+        team.setDtCreated(LocalDateTime.now());
+        team.setDtUpdated(LocalDateTime.now());
+        team.setVersion(1);
         Team expectedResp = new Team(3L, "Mongo");
-        when(teamRepo.save(team)).thenReturn(expectedResp);
+        when(teamRepo.save(any(Team.class))).thenReturn(expectedResp);
 
         TeamDto teamDto = teamService.saveTeam(new TeamDto(null, "Mongo"));
 
         assertNotNull(teamDto);
+        assertNotNull(team.getVersion());
+        assertNotNull(team.getDtCreated());
+        assertNotNull(team.getDtUpdated());
         assertEquals(3, teamDto.getId());
         assertEquals("Mongo", teamDto.getName());
-        verify(teamRepo, times(1)).save(team);
+        verify(teamRepo, atLeast(1)).save(any(Team.class));
     }
 
     @Test
@@ -125,6 +133,8 @@ class TeamServiceTest {
         assertEquals("validation.error.assigned.agent.team", exception.getMessage());
         assertEquals(1, exception.getAgentId());
         assertEquals(1, exception.getTeamId());
+        verify(agentRepo, times(1)).findById(1L);
+        verify(teamRepo, times(1)).findById(1L);
         verify(teamRepo, times(0)).save(any(Team.class));
     }
 

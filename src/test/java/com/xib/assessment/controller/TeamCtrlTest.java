@@ -5,7 +5,11 @@ import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.exception.AgentAlreadyAssignedException;
 import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.ManagedTeamException;
+import com.xib.assessment.exception.ManagerAlreadyAssignedException;
+import com.xib.assessment.exception.ManagerNotFoundException;
 import com.xib.assessment.exception.TeamNotFoundException;
+import com.xib.assessment.service.TeamManagementService;
 import com.xib.assessment.service.TeamService;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
@@ -37,6 +41,9 @@ class TeamCtrlTest {
     @LocalServerPort
     private int port;
 
+
+    @MockBean
+    private TeamManagementService teamManagementService;
 
     @BeforeEach
     void setup() {
@@ -164,4 +171,82 @@ class TeamCtrlTest {
 
         verify(teamService, times(1)).assignAgent(8L, 9L);
     }
+
+    @Test
+    @DisplayName("Assigning Manager To Team - TeamNotFoundException")
+    void givenExistingManager_whenAssigningManagerToTeam_thenThrowTeamNotFoundException() throws Exception {
+        when(teamManagementService.assignManager(10L, 9L)).thenThrow(new TeamNotFoundException("validation.error.notFound.team", 10L));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/manager/{manager-id}", 10L, 9L)
+                .then()
+                .body("field", Matchers.is("id"))
+                .body("rejectedValue", Matchers.is("10"))
+                .body("message", Matchers.is("Team-ID: 10 does not exist"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamManagementService, times(1)).assignManager(10L, 9L);
+    }
+
+
+    @Test
+    @DisplayName("Assigning Manager To Team - ManagerNotFoundException")
+    void givenExistingManager_whenAssigningManagerToTeam_thenThrowManagerNotFoundException() throws Exception {
+        when(teamManagementService.assignManager(10L, 9L)).thenThrow(new ManagerNotFoundException("validation.error.notFound.manager", 9L));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/manager/{manager-id}", 10L, 9L)
+                .then()
+                .body("field", Matchers.is("manager-id"))
+                .body("rejectedValue", Matchers.is("9"))
+                .body("message", Matchers.is("Manager-ID: 9 does not exist"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamManagementService, times(1)).assignManager(10L, 9L);
+    }
+
+    @Test
+    @DisplayName("Assigning Manager To Team - ManagedTeamException")
+    void givenExistingManager_whenAssigningManagerToTeam_thenThrowManagedTeamException() throws Exception {
+        when(teamManagementService.assignManager(10L, 9L)).thenThrow(new ManagedTeamException("validation.error.assigned.managed.teams", 10L, 2));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/manager/{manager-id}", 10L, 9L)
+                .then()
+                .body("field", Matchers.is("team-id"))
+                .body("rejectedValue", Matchers.is("10"))
+                .body("message", Matchers.is("Team-ID: 10 already has maximum allowed 2 Managers per team"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamManagementService, times(1)).assignManager(10L, 9L);
+    }
+
+    @Test
+    @DisplayName("Assigning Manager To Team - ManagerAlreadyAssignedException")
+    void givenExistingManager_whenAssigningManagerToTeam_thenThrowManagerAlreadyAssignedException() throws Exception {
+        when(teamManagementService.assignManager(10L, 9L)).thenThrow(new ManagerAlreadyAssignedException("validation.error.assigned.manager.team", 9L, 10L));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/manager/{manager-id}", 10L, 9L)
+                .then()
+                .body("field", Matchers.is("manager-id"))
+                .body("rejectedValue", Matchers.is("9"))
+                .body("message", Matchers.is("Manger-ID: 9 already assigned to Team-ID: 10"))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamManagementService, times(1)).assignManager(10L, 9L);
+    }
+
 }

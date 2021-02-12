@@ -1,6 +1,7 @@
 package com.xib.assessment.persistence.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Version;
 
 import javax.persistence.Column;
@@ -14,9 +15,10 @@ import javax.persistence.SequenceGenerator;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @MappedSuperclass
-@SequenceGenerator(name = "seq", initialValue = 1, allocationSize = 100)
+@SequenceGenerator(name = "seq", initialValue = 1, allocationSize = 1)
 public abstract class AbstractModelClass implements IModel, Serializable {
     private static final long serialVersionUID = 7547186765622776147L;
 

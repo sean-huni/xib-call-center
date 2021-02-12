@@ -59,7 +59,7 @@ class AgentCtrlTest {
                 .body("idNumber", Matchers.equalTo("1501246344184"))
                 .body("lastName", Matchers.equalTo("Huni"))
                 .assertThat()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
     }
 
     @Test
@@ -88,7 +88,7 @@ class AgentCtrlTest {
         when(agentService.findAllAgents(anyInt(), anyInt(), any(), anyString())).thenReturn(agents);
 
         given()
-                .contentType("application/json;charset=UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("agent?size=3&page=0&field=firstName&sort=DESC")
                 .then()
@@ -106,7 +106,7 @@ class AgentCtrlTest {
         when(agentService.findAllAgents(anyInt(), anyInt(), any(), anyString())).thenReturn(agents);
 
         given()
-                .contentType("application/json;charset=UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("agent?size=3&page=0&field=wrongFieldName&sort=DESC")
                 .then()

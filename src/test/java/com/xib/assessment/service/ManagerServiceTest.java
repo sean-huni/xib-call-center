@@ -7,6 +7,7 @@ import com.xib.assessment.util.ManagerStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,13 +38,15 @@ class ManagerServiceTest {
     @DisplayName("Save New Manager - Manager Service")
     void saveManager() throws Exception {
         Manager savedManager = ManagerStub.getManager();
-        ManagerDto unsavedManager = ManagerStub.getManagersDto().stream().findFirst().orElseThrow(Exception::new);
-        when(managerRepo.save(any(Manager.class))).thenReturn(savedManager);
+        ManagerDto unsavedManager = ManagerStub.getManagersDto().stream().peek(m -> m.setId(null)).findFirst().orElseThrow(Exception::new);
+        Manager mg = managerConverter.convert(unsavedManager);
+        when(managerRepo.save(ArgumentMatchers.refEq(mg))).thenReturn(savedManager);
 
         ManagerDto managerResp = managerService.saveManager(unsavedManager);
 
         assertNotNull(managerResp);
-        verify(managerRepo, times(1)).save(managerConverter.convert(unsavedManager));
+        assertNotNull(managerResp.getId());
+        verify(managerRepo, times(1)).save(ArgumentMatchers.refEq(managerConverter.convert(unsavedManager)));
     }
 
     @Test
