@@ -1,6 +1,6 @@
 package com.xib.assessment.service.impl;
 
-import com.xib.assessment.dto.ManagerDto;
+import com.xib.assessment.dto.ManagedTeamDto;
 import com.xib.assessment.exception.ManagedTeamException;
 import com.xib.assessment.exception.ManagerAlreadyAssignedException;
 import com.xib.assessment.exception.ManagerNotFoundException;
@@ -25,17 +25,17 @@ public class TeamManagementServiceImpl implements TeamManagementService {
     private final TeamRepo teamRepo;
     private final ManagerRepo managerRepo;
     private final ManagedTeamRepo managedTeamRepo;
-    private final Converter<Manager, ManagerDto> managerDtoConverter;
+    private final Converter<ManagedTeam, ManagedTeamDto> managedTeamDtoConverter;
 
-    public TeamManagementServiceImpl(TeamRepo teamRepo, ManagerRepo managerRepo, ManagedTeamRepo managedTeamRepo, Converter<Manager, ManagerDto> managerDtoConverter) {
+    public TeamManagementServiceImpl(TeamRepo teamRepo, ManagerRepo managerRepo, ManagedTeamRepo managedTeamRepo, Converter<ManagedTeam, ManagedTeamDto> managedTeamDtoConverter) {
         this.teamRepo = teamRepo;
         this.managerRepo = managerRepo;
         this.managedTeamRepo = managedTeamRepo;
-        this.managerDtoConverter = managerDtoConverter;
+        this.managedTeamDtoConverter = managedTeamDtoConverter;
     }
 
     @Override
-    public ManagerDto assignManager(Long teamId, Long managerId) throws TeamNotFoundException, ManagerNotFoundException, ManagerAlreadyAssignedException, ManagedTeamException {
+    public ManagedTeamDto assignManager(Long teamId, Long managerId) throws TeamNotFoundException, ManagerNotFoundException, ManagerAlreadyAssignedException, ManagedTeamException {
         Optional<Team> t = teamRepo.findById(teamId);
         if (!t.isPresent()) {
             throw new TeamNotFoundException("validation.error.notFound.team", teamId);
@@ -57,14 +57,19 @@ public class TeamManagementServiceImpl implements TeamManagementService {
             ManagedTeam mt = new ManagedTeam();
             mt.setTeam(t.get());
             mt.setManager(m.get());
-            m.get().getManagedTeam().add(mt);
-
-            Manager managerUnsaved = m.get();
-            Manager savedManager = managerRepo.save(managerUnsaved);
-
-            return managerDtoConverter.convert(savedManager);
+            mt = managedTeamRepo.save(mt);
+            log.debug("Saved Managed-Team: {}", mt);
+            return managedTeamDtoConverter.convert(mt);
         } else {
             throw new ManagerAlreadyAssignedException("validation.error.assigned.manager.team", managerId, teamId);
         }
     }
+
+    @Override
+    public ManagedTeamDto findManagedTeamByTeamIdAndManagerId(Long teamId, Long managerId) {
+        ManagedTeam managedTeam = managedTeamRepo.findManagedTeamByTeam_IdAndAndManager_Id(teamId, managerId);
+        return managedTeamDtoConverter.convert(managedTeam);
+    }
+
+
 }

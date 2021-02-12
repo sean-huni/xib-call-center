@@ -31,8 +31,4 @@ public class Manager extends AbstractModelClass {
         this.lastName = lastName;
         this.email = email;
     }
-
-    public void setManagedTeams(Collection<ManagedTeam> teams) {
-        this.managedTeam.addAll(teams);
-    }
 }

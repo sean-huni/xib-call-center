@@ -9,8 +9,6 @@ import com.xib.assessment.exception.ManagedTeamException;
 import com.xib.assessment.exception.ManagerAlreadyAssignedException;
 import com.xib.assessment.exception.ManagerNotFoundException;
 import com.xib.assessment.exception.TeamNotFoundException;
-import com.xib.assessment.persistence.model.Team;
-import com.xib.assessment.persistence.repo.TeamRepo;
 import com.xib.assessment.service.TeamManagementService;
 import com.xib.assessment.service.TeamService;
 import io.restassured.RestAssured;
@@ -18,7 +16,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +25,6 @@ import org.springframework.http.MediaType;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.xib.assessment.util.TestAgentStub.getAgents;
@@ -44,7 +40,6 @@ class TeamCtrlTest {
     private TeamService teamService;
     @LocalServerPort
     private int port;
-
 
 
     @MockBean
