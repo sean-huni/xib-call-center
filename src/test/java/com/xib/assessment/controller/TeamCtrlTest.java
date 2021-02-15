@@ -5,12 +5,16 @@ import com.xib.assessment.dto.AgentDto;
 import com.xib.assessment.dto.TeamDto;
 import com.xib.assessment.exception.AgentAlreadyAssignedException;
 import com.xib.assessment.exception.AgentNotFoundException;
+import com.xib.assessment.exception.AgentTeamAssignmentException;
 import com.xib.assessment.exception.ManagedTeamException;
 import com.xib.assessment.exception.ManagerAlreadyAssignedException;
 import com.xib.assessment.exception.ManagerNotFoundException;
 import com.xib.assessment.exception.TeamNotFoundException;
+import com.xib.assessment.persistence.model.Agent;
+import com.xib.assessment.persistence.model.Team;
 import com.xib.assessment.service.TeamManagementService;
 import com.xib.assessment.service.TeamService;
+import com.xib.assessment.util.TestAgentStub;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +29,13 @@ import org.springframework.http.MediaType;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.xib.assessment.util.TestAgentStub.getAgents;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -249,4 +256,24 @@ class TeamCtrlTest {
         verify(teamManagementService, times(1)).assignManager(10L, 9L);
     }
 
+
+    @Test
+    @DisplayName("Assigning Agent To Team - ManagerAlreadyAssignedException")
+    void givenExistingAgent_whenAssigningAgentToTeam_thenThrowAgentTeamAssignmentException() throws Exception {
+        Optional<Agent> agent = TestAgentStub.getAgentsModel().stream().filter(a -> a.getId() == 5L).findFirst();
+        when(teamService.assignAgent(17L, agent.get().getId())).thenThrow(new AgentTeamAssignmentException("validation.error.assigned.agent.manager", agent.get().getId()));
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/team/{id}/agent/{agent-id}", 17L, agent.get().getId())
+                .then()
+                .body("field", Matchers.is("agent-id"))
+                .body("rejectedValue", Matchers.is(agent.get().getId().toString()))
+                .body("message", Matchers.is(String.format("Agent-ID: %d can only be assigned to a team that is managed by the manager they report to", agent.get().getId())))
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).log();
+
+        verify(teamService, times(1)).assignAgent(17L, agent.get().getId());
+    }
 }
